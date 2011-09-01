@@ -78,11 +78,12 @@ class RegistrationManager(models.Manager):
                     
                     if hasattr(user,'profile') and user.profile:
                         if hasattr(user.profile,'key') and user.profile.key:
-                            email.attach('license', user.profile.key, 'text/json')
+                            email.attach('key.txt', user.profile.key, 'text')
                     
                     email.send()
                 
                 return user
+            
         return False
     
     def create_inactive_user(self, username, password, email,
