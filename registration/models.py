@@ -60,7 +60,7 @@ class RegistrationManager(models.Manager):
                 profile.save()
                 
                 if profile_callback is not None:
-                    profile_callback(user=new_user)
+                    profile_callback(user=user)
                 
                 if send_email:
                     current_site = Site.objects.get_current()
@@ -71,13 +71,13 @@ class RegistrationManager(models.Manager):
                     subject = ''.join(subject.splitlines())
                     
                     message = render_to_string('registration/activated_email.txt',
-                                               { 'user' : new_user,
+                                               { 'user' : user,
                                                  'site': current_site })
                     
                     email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email], [])
                     
-                    if has_attr(new_user,'profile') and user.profile:
-                        if has_attr(new_user.profile,'key') and user.profile.key:
+                    if has_attr(user,'profile') and user.profile:
+                        if has_attr(user.profile,'key') and user.profile.key:
                             email.attach('license', user.profile.key, 'text/json')
                     
                     email.send()
