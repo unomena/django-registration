@@ -4,6 +4,7 @@ import re
 import sha
 
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
@@ -62,7 +63,6 @@ class RegistrationManager(models.Manager):
                     profile_callback(user=new_user)
                 
                 if send_email:
-                    from django.core.mail import send_mail
                     current_site = Site.objects.get_current()
                     
                     subject = render_to_string('registration/activated_email_subject.txt',
@@ -74,7 +74,13 @@ class RegistrationManager(models.Manager):
                                                { 'user' : new_user,
                                                  'site': current_site })
                     
-                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email])
+                    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email], [])
+                    
+                    if has_attr(new_user,'profile') and user.profile:
+                        if has_attr(new_user.profile,'key') and user.profile.key:
+                            email.attach('license', user.profile.key, 'text/json')
+                    
+                    email.send()
                 
                 return user
         return False
