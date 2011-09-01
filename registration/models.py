@@ -78,7 +78,7 @@ class RegistrationManager(models.Manager):
                     
                     if hasattr(user,'profile') and user.profile:
                         if hasattr(user.profile,'key') and user.profile.key:
-                            email.attach('key.txt', user.profile.key, 'text')
+                            email.attach('key.txt', user.profile.key, 'text/json')
                     
                     email.send()
                 
