@@ -76,8 +76,8 @@ class RegistrationManager(models.Manager):
                     
                     email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], [])
                     
-                    if has_attr(user,'profile') and user.profile:
-                        if has_attr(user.profile,'key') and user.profile.key:
+                    if hasattr(user,'profile') and user.profile:
+                        if hasattr(user.profile,'key') and user.profile.key:
                             email.attach('license', user.profile.key, 'text/json')
                     
                     email.send()
