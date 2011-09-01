@@ -74,7 +74,7 @@ class RegistrationManager(models.Manager):
                                                { 'user' : user,
                                                  'site': current_site })
                     
-                    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email], [])
+                    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], [])
                     
                     if has_attr(user,'profile') and user.profile:
                         if has_attr(user.profile,'key') and user.profile.key:
