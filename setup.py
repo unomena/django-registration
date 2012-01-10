@@ -24,7 +24,7 @@ for dirpath, dirnames, filenames in os.walk('registration'):
 
 
 setup(name='django-registration',
-      version='0.7.unomena.7',
+      version='0.7.unomena.8',
       description='An extensible user-registration application for Django',
       author='James Bennett',
       author_email='james@b-list.org',
