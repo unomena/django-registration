@@ -32,6 +32,8 @@ class RegistrationForm(forms.Form):
     ``RegistrationProfile.objects.create_inactive_user()``.
     
     """
+    first_name = forms.CharField(max_length=30, required=False)
+    last_name = forms.CharField(max_length=30, required=False)
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
@@ -81,7 +83,9 @@ class RegistrationForm(forms.Form):
         supplied.
         
         """
-        new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
+        new_user = RegistrationProfile.objects.create_inactive_user(first_name=self.cleaned_data['first_name'],
+                                                                    last_name=self.cleaned_data['last_name'],
+                                                                    username=self.cleaned_data['username'],
                                                                     password=self.cleaned_data['password1'],
                                                                     email=self.cleaned_data['email'],
                                                                     profile_callback=profile_callback)
