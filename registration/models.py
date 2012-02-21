@@ -4,7 +4,7 @@ import re
 import sha
 
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail, EmailMessage
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
@@ -87,7 +87,11 @@ class RegistrationManager(models.Manager):
         return False
     
     def create_inactive_user(self, first_name, last_name, username, password, email,
-                             send_email=True, profile_callback=None):
+                             send_email=True, 
+                             activation_email_subject_template='registration/activation_email_subject.txt',
+                             activation_email_template='registration/activation_email.txt',
+                             activation_email_context={},
+                             profile_callback=None):
         """
         Create a new, inactive ``User``, generates a
         ``RegistrationProfile`` and email its activation key to the
@@ -140,21 +144,17 @@ class RegistrationManager(models.Manager):
             profile_callback(user=new_user)
         
         if send_email:
-            from django.core.mail import send_mail
-            current_site = Site.objects.get_current()
+            activation_email_context.update({'user' : new_user,
+                                             'activation_key': registration_profile.activation_key,
+                                             'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+                                             'site': Site.objects.get_current() 
+                                             })
             
-            subject = render_to_string('registration/activation_email_subject.txt',
-                                       { 'site': current_site })
-            # Email subject *must not* contain newlines
+            subject = render_to_string(activation_email_subject_template, activation_email_context)
             subject = ''.join(subject.splitlines())
-            
-            message = render_to_string('registration/activation_email.txt',
-                                       { 'user' : new_user,
-                                         'activation_key': registration_profile.activation_key,
-                                         'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                                         'site': current_site })
-            
+            message = render_to_string(activation_email_template, activation_email_context)
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email])
+            
         return new_user
     
     def create_profile(self, user):
